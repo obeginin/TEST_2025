@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):
 # Create FastAPI application
 app = FastAPI(
     title=settings.app_name,
-    description="A modern wallet management API with concurrent operation support",
+    description="A modern wallet management",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
