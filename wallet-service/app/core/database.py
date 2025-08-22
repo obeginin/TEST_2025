@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import QueuePool
 from typing import Generator
 from .config import settings
+from sqlalchemy import text
 import logging
 
 logger = logging.getLogger(__name__)
@@ -53,7 +54,7 @@ def check_database_connection() -> bool:
     """Check if database connection is working."""
     try:
         with engine.connect() as conn:
-            conn.execute("SELECT 1")
+            conn.execute(text("SELECT 1"))
         logger.info("✅ Database connection established successfully")
         return True
     except Exception as e:

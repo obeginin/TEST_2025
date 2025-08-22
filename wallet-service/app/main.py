@@ -119,18 +119,6 @@ async def health_check():
     }
 
 
-# Root endpoint
-@app.get("/", tags=["Root"])
-async def root():
-    """Root endpoint with API information."""
-    return {
-        "message": f"Welcome to {settings.app_name}",
-        "version": "1.0.0",
-        "docs": "/docs",
-        "redoc": "/redoc",
-        "health": "/health"
-    }
-
 
 # Include API routers
 app.include_router(
