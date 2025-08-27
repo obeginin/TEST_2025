@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import AnyUrl, Field
 from typing import Optional
 import os
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -9,8 +10,8 @@ class Settings(BaseSettings):
     
     # Pydantic v2 settings config
     model_config = SettingsConfigDict(
-        env_file=".env",
-        case_sensitive=True,
+        env_file=str(Path(__file__).parent.parent / ".env"),
+        case_sensitive=False,
         extra="ignore",  # ignore unknown env vars like CORS_ORIGINS
     )
 
@@ -18,7 +19,6 @@ class Settings(BaseSettings):
     app_name: str = "Wallet Service API"
     environment: str = "development"
     debug: bool = False
-    # Secret key must be provided via environment (e.g., SECRET_KEY in .env)
     secret_key: str = Field(..., min_length=16)
     
     # Database

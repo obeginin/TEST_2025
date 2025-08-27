@@ -1,15 +1,18 @@
+from my_wallet_service.utils.config import settings
+from my_wallet_service.app.api import api_router
+from my_wallet_service.utils import database
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
+import asyncio
 import logging
 import uuid
-from api import wallets
-from .core.config import settings
-from .core.database import check_database_connection
-from .core.exceptions import AppException, to_http_exception
-from .api.v1.wallets import router as wallets_router
-from config import settings
+
+
+#from .core.database import check_database_connection
+#from .core.exceptions import AppException, to_http_exception
+
 
 # Configure logging
 logging.basicConfig(
@@ -24,15 +27,15 @@ async def lifespan(app: FastAPI):
     """Application lifespan events."""
     # Startup
     logger.info("🚀 Starting Wallet Service API...")
-    
-    # Check database connection
-    if not check_database_connection():
-        logger.error("❌ Database connection failed. Application may not work properly.")
-    
+    try:
+        result = await asyncio.to_thread(database.check_database_connection)
+        # Check database connection
+        if not result:
+            logger.error("❌ Database connection failed. Application may not work properly.")
+    except Exception as e:
+        logger.error(f"❌ Error during database check: {e}")
     logger.info("✅ Wallet Service API started successfully")
-    
     yield
-    
     # Shutdown
     logger.info("🛑 Shutting down Wallet Service API...")
 
@@ -48,14 +51,22 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-app.include_router(
-    app.api.v1.wallets.wallets_router,
-    prefix=settings.api_prefix + "/wallets",
-    tags=["Wallets"]
-)
+app.include_router(api_router, prefix=settings.api_prefix)
 
 
+'''@app.exception_handler(AppException)
+async def app_exception_handler(request: Request, exc: AppException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.message}
+    )
 
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors()}
+    )'''
 
 # Health check endpoint
 @app.get("/health", tags=["Health"])
@@ -70,13 +81,3 @@ async def health_check():
 
 
 
-if __name__ == "__main__":
-    import uvicorn
-    
-    uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=settings.debug,
-        log_level=settings.log_level.lower()
-    )

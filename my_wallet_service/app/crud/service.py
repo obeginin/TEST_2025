@@ -1,10 +1,13 @@
+from my_wallet_service.app.models import model
+from my_wallet_service.app.schemas import schema
+from my_wallet_service.utils.config import settings
+
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from sqlalchemy import select, update
 from decimal import Decimal
-from .models import Wallet
-from .schemas import WalletOperation
-from sqlalchemy import text
-
+import logging
+logger = logging.getLogger(__name__)
 
 
 def get_wallet(db: Session, wallet_id):
@@ -12,7 +15,7 @@ def get_wallet(db: Session, wallet_id):
     row = db.execute(stmt, {"wallet_id": wallet_id}).fetchone()
     return row[0] if row else None
 
-def perform_operation(db: Session, wallet_id, operation: WalletOperation):
+def perform_operation(db: Session, wallet_id, operation: schema.WalletOperation):
     # Используем транзакцию с блокировкой строки для конкурентной среды
     with db.begin():
         # Блокируем строку с помощью SELECT ... FOR UPDATE

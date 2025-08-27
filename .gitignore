@@ -2,10 +2,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.pyc
 
 # Environments
 wallet-service/.env
+wallet-service/.venv
 .env
 .venv
 env/
@@ -15,6 +16,8 @@ env/
 # IDE
 .vscode/
 .idea/
+*.iml
+*.xml
 *.swp
 *.swo
 *~
@@ -26,4 +29,10 @@ Thumbs.db
 # Project specific
 logs/
 *.db
+
+
+
+
+
+
 

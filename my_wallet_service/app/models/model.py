@@ -1,8 +1,8 @@
-
+from my_wallet_service.utils.database import Base
 import uuid
 from sqlalchemy import Column, String, Integer, Numeric
 from sqlalchemy.dialects.postgresql import UUID
-from .database import Base
+
 
 
 class Wallet(Base):

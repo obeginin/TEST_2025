@@ -11,7 +11,7 @@ T = TypeVar("T")
 
 
 class BaseRepository(Generic[T]):
-    """Base repository with common CRUD operations."""
+    """Base repository with common crud operations."""
     
     def __init__(self, model: Type[T], db: Session):
         self.model = model
