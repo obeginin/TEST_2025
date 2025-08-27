@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import AnyUrl, Field, field_validator
+from pydantic import AnyUrl, Field
 from typing import Optional
 import os
 
@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     # Pydantic v2 settings config
     model_config = SettingsConfigDict(
         env_file=".env",
-        case_sensitive=False,
+        case_sensitive=True,
         extra="ignore",  # ignore unknown env vars like CORS_ORIGINS
     )
 
