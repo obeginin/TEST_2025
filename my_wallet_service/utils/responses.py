@@ -23,7 +23,7 @@ class ErrorResponse(BaseResponse):
     
     success: bool = Field(default=False, description="Operation success status")
     details: Optional[Dict[str, Any]] = Field(None, description="Error details")
-    request_id: Optional[str] = Field(None, description="")
+    request_id: Optional[str] = Field(None, description="Request ID for tracking")
 
 
 class PaginatedResponse(BaseResponse, Generic[T]):
@@ -37,15 +37,48 @@ class PaginatedResponse(BaseResponse, Generic[T]):
     success: bool = Field(default=True, description="Operation success status")
 
 
-# для оборачивания стандартного запроса
-def success_response(data: Any, message: str = "Operation completed successfully") -> Dict[str, Any]:
-    return {"success": True, "message": message, "data": data}
+def success_response(
+    data: Any,
+    message: str = "Operation completed successfully"
+) -> Dict[str, Any]:
+    """Create a success response."""
+    return {
+        "success": True,
+        "message": message,
+        "data": data
+    }
 
-# особый случай, когда нужно вернуть ошибку, но без выброса исключения.
-def error_response(message: str, details: Optional[Dict[str, Any]] = None, request_id: Optional[str] = None) -> Dict[str, Any]:
-    return {"success": False, "message": message, "details": details, "request_id": request_id}
 
-# возвращает список с пагинацией (разбивка на страницы)
-def paginated_response(data: List[Any], total: int, page: int, size: int, message: str = "Data retrieved successfully") -> Dict[str, Any]:
-    pages = (total + size - 1) // size
-    return {"success": True, "message": message, "data": data, "total": total, "page": page, "size": size, "pages": pages}
+def error_response(
+    message: str,
+    details: Optional[Dict[str, Any]] = None,
+    request_id: Optional[str] = None
+) -> Dict[str, Any]:
+    """Create an error response."""
+    return {
+        "success": False,
+        "message": message,
+        "details": details,
+        "request_id": request_id
+    }
+
+
+def paginated_response(
+    data: List[Any],
+    total: int,
+    page: int,
+    size: int,
+    message: str = "Data retrieved successfully"
+) -> Dict[str, Any]:
+    """Create a paginated response."""
+    pages = (total + size - 1) // size  # Ceiling division
+    
+    return {
+        "success": True,
+        "message": message,
+        "data": data,
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": pages
+    }

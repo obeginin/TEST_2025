@@ -1,6 +1,7 @@
 from my_wallet_service.utils.config import settings
 from my_wallet_service.app.api import api_router
 from my_wallet_service.utils import database
+from my_wallet_service.utils.exceptions import AppException
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
@@ -51,22 +52,55 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-app.include_router(api_router, prefix=settings.api_prefix)
-
-
-'''@app.exception_handler(AppException)
+# Global exception handlers (ловит все ошибка приложения)
+@app.exception_handler(AppException)
 async def app_exception_handler(request: Request, exc: AppException):
+    """Handle custom application exceptions."""
+    logger.error(f"AppException: {exc.message} (Request ID: {getattr(request.state, 'request_id', 'unknown')})")
+
     return JSONResponse(
         status_code=exc.status_code,
-        content={"detail": exc.message}
+        content={
+            "success": False,
+            "message": exc.message,
+            "details": exc.details,
+            "request_id": getattr(request.state, "request_id", None)
+        }
     )
+
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Handle request validation errors."""
+    logger.warning(f"Validation error: {exc.errors()} (Request ID: {getattr(request.state, 'request_id', 'unknown')})")
+
     return JSONResponse(
         status_code=422,
-        content={"detail": exc.errors()}
-    )'''
+        content={
+            "success": False,
+            "message": "Validation error",
+            "details": exc.errors(),
+            "request_id": getattr(request.state, "request_id", None)
+        }
+    )
+
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """Handle general exceptions."""
+    logger.error(f"Unhandled exception: {str(exc)} (Request ID: {getattr(request.state, 'request_id', 'unknown')})")
+
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "message": "Internal server error",
+            "request_id": getattr(request.state, "request_id", None)
+        }
+    )
+
+# connecting routes
+app.include_router(api_router, prefix=settings.api_prefix)
 
 # Health check endpoint
 @app.get("/health", tags=["Health"])

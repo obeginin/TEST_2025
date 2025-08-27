@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-# подключаем в main
+
 class AppException(Exception):
     """Base application exception."""
     
@@ -15,27 +15,6 @@ class AppException(Exception):
         self.details = details or {}
         super().__init__(self.message)
 
-# Эти ошибки используем для raise
-class ValidationError(AppException):
-    """Validation error exception."""
-
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
-        super().__init__(
-            message=message,
-            status_code=422,
-            details=details
-        )
-
-
-class ConflictError(AppException):
-    """Conflict error exception."""
-
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
-        super().__init__(
-            message=message,
-            status_code=409,
-            details=details
-        )
 
 class NotFoundError(AppException):
     """Resource not found exception."""
@@ -46,32 +25,54 @@ class NotFoundError(AppException):
             status_code=404
         )
 
-class AccessDeniedError(AppException):
-    """403 Forbidden / Access denied"""
-    def __init__(self, message: str = "Access denied", details: Optional[Dict[str, Any]] = None):
+
+class ValidationError(AppException):
+    """Validation error exception."""
+    
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message,
-            status_code=403,
+            status_code=422,
             details=details
         )
 
-class UnauthorizedError(AppException):
-    """401 Unauthorized"""
-    def __init__(self, message: str = "Unauthorized", details: Optional[Dict[str, Any]] = None):
+
+class ConflictError(AppException):
+    """Conflict error exception."""
+    
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message,
-            status_code=401,
+            status_code=409,
             details=details
         )
 
-class BadRequestError(AppException):
-    """400 Bad Request"""
-    def __init__(self, message: str = "Bad request", details: Optional[Dict[str, Any]] = None):
+
+class InsufficientFundsError(AppException):
+    """Insufficient funds exception."""
+    
+    def __init__(self, wallet_uuid: str, requested_amount: float, current_balance: float):
         super().__init__(
-            message=message,
+            message=f"Insufficient funds in wallet {wallet_uuid}",
             status_code=400,
-            details=details
+            details={
+                "wallet_uuid": wallet_uuid,
+                "requested_amount": requested_amount,
+                "current_balance": current_balance
+            }
         )
+
+
+class InvalidOperationError(AppException):
+    """Invalid operation exception."""
+    
+    def __init__(self, operation_type: str, message: str = None):
+        super().__init__(
+            message=message or f"Invalid operation type: {operation_type}",
+            status_code=400,
+            details={"operation_type": operation_type}
+        )
+
 
 def to_http_exception(exc: AppException):
     """Convert AppException to HTTPException."""
