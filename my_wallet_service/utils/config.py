@@ -35,6 +35,8 @@ class Settings(BaseSettings):
     # API
     api_prefix: str = "/api/v1"
 
+    timezone: str = "Europe/Moscow"
+
 
 
 
