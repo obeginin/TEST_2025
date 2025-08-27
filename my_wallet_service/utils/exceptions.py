@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional
-
+import logging
+logger = logging.getLogger(__name__)
 
 class AppException(Exception):
     """Base application exception."""

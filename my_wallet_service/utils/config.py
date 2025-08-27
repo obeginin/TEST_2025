@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     
     # Logging
     log_level: str = "INFO"
-    log_file: Optional[str] = "logs"
+    log_file: str = "logs"
     
     # API
     api_prefix: str = "/api/v1"

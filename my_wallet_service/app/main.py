@@ -7,20 +7,16 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
 import asyncio
+from my_wallet_service.utils.log import setup_logging  # если ты вынес код в отдельный модуль
 import logging
 import uuid
-
-
 #from .core.database import check_database_connection
 #from .core.exceptions import AppException, to_http_exception
-
-
-# Configure logging
-logging.basicConfig(
-    level=getattr(logging, settings.log_level.upper()),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
 logger = logging.getLogger(__name__)
+
+setup_logging()  # <- настраиваем логирование
+
+
 
 
 @asynccontextmanager
