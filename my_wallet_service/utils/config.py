@@ -22,11 +22,18 @@ class Settings(BaseSettings):
     secret_key: str = Field(..., min_length=16)
     
     # Database
-    database_url: AnyUrl
-    database_pool_size: int = 10
-    database_max_overflow: int = 20
-    database_pool_timeout: int = 30
-    database_pool_recycle: int = 1800
+    #db_url: AnyUrl
+    db_host: str
+    db_port: str
+    db_user: str
+    db_password: str
+    db_name: str
+    db_url = f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+
+    db_pool_size: int = 10
+    db_max_overflow: int = 20
+    db_pool_timeout: int = 30
+    db_pool_recycle: int = 1800
     
     # Logging
     log_level: str = "INFO"
